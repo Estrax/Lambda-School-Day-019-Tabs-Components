@@ -91,8 +91,9 @@
   padding-top: 60px;
 }
 .tabs .tabs-item {
-  display: none;
-  width: 75%;
+  width: 0;
+  opacity: 0;
+  transition: 0.5s;
 }
 .tabs .tabs-item .tabs-item-title {
   font-size: 24px;
@@ -101,6 +102,10 @@
 }
 .tabs .tabs-item-selected {
   display: block;
+  width: 75%;
+  opacity: 1;
+  transition-delay: 0.5s;
+  transition: opacity 0.8s;
 }
 .tabs .tabs-links {
   display: flex;
