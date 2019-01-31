@@ -1,66 +1,5 @@
-
-class TabLink {
-  constructor(element) {
-    // Assign this.element to the passed in DOM element
-    // this.element;
-    this.element = element;
-    
-    // Get the custom data attribute on the Link
-    // this.data;
-    this.data = this.element.dataset.tab;
-    
-    // Using the custom data attribute get the associated Item element
-    // this.itemElement;
-    this.itemElement = document.querySelector(`.tabs-item[data-tab="${this.data}"]`);
-    
-    // Using the Item element, create a new instance of the TabItem class
-    // this.tabItem;
-    this.tabItem = new TabItem(this.itemElement);
-    
-    // Add a click event listener on this instance, calling the select method on click
-    this.element.addEventListener('click', () => this.select());
-  };
-
-  select() {
-    // Get all of the elements with the tabs-link class
-    // const links;
-    const links = document.querySelectorAll('.tabs-link');
-
-    // Using a loop or the forEach method remove the 'tabs-link-selected' class from all of the links
-    // Array.from(links).forEach();
-    links.forEach(link => link.classList.remove('tabs-link-selected'));
-
-    // Add a class named "tabs-link-selected" to this link
-    // this.element;
-    this.element.classList.toggle('tabs-link-selected');
-    
-    // Call the select method on the item associated with this link
-    this.tabItem.select();
-  }
-}
-
-class TabItem {
-  constructor(element) {
-    // Assign this.element to the passed in element
-    // this.element;
-    this.element = element;
-  }
-
-  select() {
-    // Select all ".tabs-item" elements from the DOM
-    // const items;
-    const items = document.querySelectorAll('.tabs-item');
-
-    // Remove the class "tabs-item-selected" from each element
-    items.forEach(item => item.classList.remove('tabs-item-selected'));
-    // Add a class named "tabs-item-selected" to this element
-    //this.element;
-    this.element.classList.toggle('tabs-item-selected');
-  }
-}
-
 const tabsContent = {
-  ids: ["5", "6", "7", "8"],
+  ids: ["1", "2", "3", "4", "5", "6", "7", "8"],
   descriptions: [
     "Single origin bar, in, aroma dark variety barista blue mountain aroma sweet viennese organic. Crema rich crema mazagran as turkish breve wings redeye rich sugar. Cortado skinny aged body filter dark viennese shop. And medium milk sugar java cup milk barista body crema. To go robusta café au lait organic ut, caffeine, frappuccino so caffeine mug macchiato.",
     "Epic cheeseburgers come in all kinds of manifestations, but we want them in and around our mouth no matter what. Slide those smashed patties with the gently caramelized meat fat between a toasted brioche bun and pass it over. You fall in love with the cheeseburger itself but the journey ain’t half bad either.",
@@ -88,37 +27,114 @@ const tabsContent = {
     "Leverage agile frameworks to provide a robust synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition. Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.",
     "Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring."
   ]
-
 }
 
-function generateTabs(){
-  tabsContent.ids.forEach(tab => {
-    let id = Number(tab)-5;
-    let tablink = document.createElement('div');
-    tablink.classList.add('tabs-link');
-    tablink.setAttribute('data-tab', tabsContent.ids[id]);
-    tablink.textContent = "Tab "+tabsContent.ids[id];
-    document.querySelector('.tabs-links').appendChild(tablink);
-  
-    let tabitem = document.createElement('div');
-    tabitem.classList.add('tabs-item');
-    tabitem.setAttribute('data-tab', tabsContent.ids[id]);
-    
-    let tabitem_title = document.createElement('div');
-    tabitem_title.classList.add('tabs-item-title');
-    tabitem_title.textContent = "Quote "+tabsContent.ids[id];
-  
-    let tabitem_description = document.createElement('div');
-    tabitem_description.classList.add('tabs-item-description');
-    tabitem_description.textContent = tabsContent.descriptions[Math.floor(Math.random()*tabsContent.descriptions.length)];
-  
-    tabitem.appendChild(tabitem_title);
-    tabitem.appendChild(tabitem_description);
-    document.querySelector('.tabs-items').append(tabitem);
-  });
-};
+class Tabs {
+  constructor(data){
+    this.data = data;
+    this.tabslinks = [];
+    this.currentlySelected = "";
 
-generateTabs();
+    this.generateTabsContent();
+    this.generateTabsLinks();
+    this.renderTabs();
+    
+    this.currentlySelected = this.tabslinks[0];
+    this.updateCurrentlySelected(this.currentlySelected);
+  }
+
+  updateCurrentlySelected(newSelected){
+    this.currentlySelected.deselect();
+    this.currentlySelected = newSelected;
+    this.currentlySelected.select();
+  }
+
+  renderTabs(){
+    document.querySelectorAll('.tabs-link').forEach(tablink => {
+      let new_tab = new TabLink(tablink);
+      this.tabslinks.push(new_tab);
+    });
+  }
+
+  generateTabsLinks(){
+    this.data.ids.forEach(tab => {
+      let id = Number(tab)-1;
+      let tablink = document.createElement('div');
+      tablink.classList.add('tabs-link');
+      tablink.setAttribute('data-tab', tabsContent.ids[id]);
+      tablink.textContent = "Tab "+tabsContent.ids[id];
+      document.querySelector('.tabs-links').appendChild(tablink);
+    });
+    
+  }
+
+  generateTabsContent(){
+    this.data.ids.forEach(tab => {
+      let id = Number(tab)-1;
+    
+      let tabitem = document.createElement('div');
+      tabitem.classList.add('tabs-item');
+      tabitem.setAttribute('data-tab', tabsContent.ids[id]);
+      
+      let tabitem_title = document.createElement('div');
+      tabitem_title.classList.add('tabs-item-title');
+      tabitem_title.textContent = "Quote "+tabsContent.ids[id];
+    
+      let tabitem_description = document.createElement('div');
+      tabitem_description.classList.add('tabs-item-description');
+      tabitem_description.textContent = tabsContent.descriptions[Math.floor(Math.random()*tabsContent.descriptions.length)];
+    
+      tabitem.appendChild(tabitem_title);
+      tabitem.appendChild(tabitem_description);
+      document.querySelector('.tabs-items').appendChild(tabitem);
+    });
+  }
+}
+
+
+class TabLink {
+  constructor(element) {
+    this.element = element;
+    this.data = this.element.dataset.tab;
+    
+    this.itemElement = document.querySelector(`.tabs-item[data-tab="${this.data}"]`);
+    
+    this.tabItem = new TabItem(this.itemElement);
+    
+    this.element.addEventListener('click', () => links.updateCurrentlySelected(this));
+  };
+
+  select() {
+    this.element.classList.toggle('tabs-link-selected');
+    this.tabItem.select();
+  }
+
+  deselect(){
+    this.element.classList.remove('tabs-link-selected');
+    // if(this.element.classList.contains("tabs-link-selected")){
+    //   TweenMax.to(this.element, 1, { className: "-=tabs-link-selected" });
+    // }
+
+    this.tabItem.deselect();
+  }
+}
+
+class TabItem {
+  constructor(element) {
+    this.element = element;
+  }
+
+  select() {
+    this.element.classList.toggle('tabs-item-selected');
+  }
+
+  deselect(){
+    this.element.classList.remove('tabs-item-selected')
+    // if(this.element.classList.contains()){
+    //   TweenMax.to(this.element, 1, { className: "-=tabs-item-selected" });
+    // }
+  }
+}
 
 /* START HERE: 
 
@@ -130,4 +146,4 @@ generateTabs();
 
 */
 
-links = document.querySelectorAll('.tabs-link').forEach(tablink => new TabLink(tablink));
+links = new Tabs(tabsContent);
